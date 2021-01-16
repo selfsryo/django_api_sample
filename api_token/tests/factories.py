@@ -1,7 +1,7 @@
 import random
 
 from api_token.models import Token
-from api_token.authentication import create_token
+from api_token.authentications import create_token
 from app.tests.factories import factory_user
 
 

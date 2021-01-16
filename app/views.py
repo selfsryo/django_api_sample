@@ -8,7 +8,7 @@ from app.forms import (
     get_error_dict,
     CombiCreateAPIForm,
 )
-from api_token import authentication as auth
+from api_token import authentications as auth
 
 
 @csrf_exempt

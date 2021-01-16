@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from api_token.authentication import create_token
+from api_token.authentications import create_token
 
 
 def token_create(request):
