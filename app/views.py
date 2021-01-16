@@ -26,7 +26,7 @@ def combi_create(request):
         return JsonResponse({'message': 'トークンを取得してください'}, status=400)
 
     if auth.check_valid_token(request) is None:
-        return JsonResponse({'message': 'リクエストヘッダにトークンが含まれていません'}, status=400)
+        return JsonResponse({'message': 'リクエストヘッダにトークンが含まれていません'}, status=401)
     elif not auth.check_valid_token(request):
         return JsonResponse({'message': 'トークンが異なります'}, status=400)
 
@@ -79,7 +79,7 @@ def combi_delete(request, pk):
         return JsonResponse({'message': 'トークンを取得してください'}, status=400)
 
     if auth.check_valid_token(request) is None:
-        return JsonResponse({'message': 'リクエストヘッダにトークンが含まれていません'}, status=400)
+        return JsonResponse({'message': 'リクエストヘッダにトークンが含まれていません'}, status=401)
     elif not auth.check_valid_token(request):
         return JsonResponse({'message': 'トークンが異なります'}, status=400)
 
