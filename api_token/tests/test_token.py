@@ -88,7 +88,7 @@ class TestCreateCombiWithToken(TestCase):
             'office': 'グレープカンパニー',
         }), content_type='application/json')
 
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 401)
 
         msg = json.loads(res.content)['message']
         self.assertEqual(msg, 'リクエストヘッダにトークンが含まれていません')
@@ -104,12 +104,27 @@ class TestCreateCombiWithToken(TestCase):
         request2.user = factory_user()
         token2 = factory_token(request=request2)
 
-        self.header = {'HTTP_AUTHORIZATION': token2.token}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + token2.token}
 
         res = self.client.post(COMBI_CREATE_URL, json.dumps({
             'name': 'チュートリアル',
             'office': '吉本興業',
         }), content_type='application/json', **self.header)
+        self.assertEqual(res.status_code, 400)
+
+        msg = json.loads(res.content)['message']
+        self.assertEqual(msg, 'トークンが異なります')
+        self.assertEqual(Combi.objects.count(), 0)
+
+    def test_not_auth_type(self):
+        """認証タイプを含めずコンビ作成"""
+        token = factory_token(user=self.user)
+        header = {'HTTP_AUTHORIZATION': token.token}
+        res = self.client.post(COMBI_CREATE_URL, json.dumps({
+            'name': 'ブラックマヨネーズ',
+            'office': '吉本興業',
+        }), content_type='application/json', **header)
+
         self.assertEqual(res.status_code, 400)
 
         msg = json.loads(res.content)['message']
@@ -126,8 +141,8 @@ class TestDeleteCombiWithToken(TestCase):
         )
         self.client.force_login(self.user)
 
-        office = factory_office(name='吉本興業')
-        self.combi = factory_combi(name='ブラックマヨネーズ', office=office)
+        office = factory_office(name='人力舎')
+        self.combi = factory_combi(name='アンタッチャブル', office=office)
         self.url = reverse('app:delete', args=[self.combi.pk])
 
     def test_not_create_token(self):
@@ -145,7 +160,7 @@ class TestDeleteCombiWithToken(TestCase):
         factory_token(user=self.user)
         res = self.client.delete(self.url)
 
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 401)
 
         msg = json.loads(res.content)['message']
         self.assertEqual(msg, 'リクエストヘッダにトークンが含まれていません')
@@ -161,9 +176,21 @@ class TestDeleteCombiWithToken(TestCase):
         request2.user = factory_user()
         tk = factory_token(request=request2)
 
-        self.header = {'HTTP_AUTHORIZATION': tk.token}
+        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + tk.token}
 
         res = self.client.delete(self.url, **self.header)
+        self.assertEqual(res.status_code, 400)
+
+        msg = json.loads(res.content)['message']
+        self.assertEqual(msg, 'トークンが異なります')
+        self.assertEqual(Combi.objects.count(), 1)
+
+    def test_not_auth_type(self):
+        """認証タイプを含めずコンビ削除"""
+        token = factory_token(user=self.user)
+        header = {'HTTP_AUTHORIZATION': token.token}
+        res = self.client.delete(self.url, **header)
+
         self.assertEqual(res.status_code, 400)
 
         msg = json.loads(res.content)['message']

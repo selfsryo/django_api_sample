@@ -29,7 +29,9 @@ def check_valid_token(request):
     if hd_token is None:
         return hd_token
 
-    if 'token ' in hd_token:
-        hd_token = hd_token.strip('token ')
+    if 'Bearer ' in hd_token:
+        hd_token = hd_token.strip('Bearer ')
+    else:
+        return False
 
     return request.user.token.token == hd_token

@@ -11,7 +11,7 @@ def factory_token(**kwargs):
     else:
         d = {
             'token': ''.join(
-                random.choice('abcdefghijklmn') for _ in range(100)
+                random.choice('abcdefghijklmn') for _ in range(32)
             ),
             'user': factory_user()
         }
