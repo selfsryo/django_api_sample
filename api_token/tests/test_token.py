@@ -104,7 +104,7 @@ class TestCreateCombiWithToken(TestCase):
         request2.user = factory_user()
         token2 = factory_token(request=request2)
 
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + token2.token}
+        self.header = {'HTTP_AUTHORIZATION': 'Token ' + token2.token}
 
         res = self.client.post(COMBI_CREATE_URL, json.dumps({
             'name': 'チュートリアル',
@@ -116,7 +116,7 @@ class TestCreateCombiWithToken(TestCase):
         self.assertEqual(msg, 'トークンが異なります')
         self.assertEqual(Combi.objects.count(), 0)
 
-    def test_not_auth_type(self):
+    def test_not_set_auth_type(self):
         """認証タイプを含めずコンビ作成"""
         token = factory_token(user=self.user)
         header = {'HTTP_AUTHORIZATION': token.token}
@@ -176,7 +176,7 @@ class TestDeleteCombiWithToken(TestCase):
         request2.user = factory_user()
         tk = factory_token(request=request2)
 
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + tk.token}
+        self.header = {'HTTP_AUTHORIZATION': 'Token ' + tk.token}
 
         res = self.client.delete(self.url, **self.header)
         self.assertEqual(res.status_code, 400)
@@ -185,7 +185,7 @@ class TestDeleteCombiWithToken(TestCase):
         self.assertEqual(msg, 'トークンが異なります')
         self.assertEqual(Combi.objects.count(), 1)
 
-    def test_not_auth_type(self):
+    def test_not_set_auth_type(self):
         """認証タイプを含めずコンビ削除"""
         token = factory_token(user=self.user)
         header = {'HTTP_AUTHORIZATION': token.token}

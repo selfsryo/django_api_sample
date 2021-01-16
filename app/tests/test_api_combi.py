@@ -22,7 +22,7 @@ class TestCreateAPICombi(TestCase):
         self.token = factory_token()
         self.user = self.token.user
         self.client.force_login(self.user)
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.token.token}
+        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.token.token}
 
     def test_create_combi_success(self):
         """コンビ作成成功"""
@@ -130,7 +130,7 @@ class TestDeleteAPICombi(TestCase):
         self.token = factory_token()
         self.user = self.token.user
         self.client.force_login(self.user)
-        self.header = {'HTTP_AUTHORIZATION': 'Bearer ' + self.token.token}
+        self.header = {'HTTP_AUTHORIZATION': 'Token ' + self.token.token}
 
         office = factory_office(name='吉本興業')
         self.combi = factory_combi(name='パンクブーブー', office=office)

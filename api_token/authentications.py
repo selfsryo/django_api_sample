@@ -29,8 +29,10 @@ def check_valid_token(request):
     if hd_token is None:
         return hd_token
 
-    if 'Bearer ' in hd_token:
-        hd_token = hd_token.strip('Bearer ')
+    if 'Token ' in hd_token:
+        hd_token = hd_token.replace('Token ', '')
+    elif 'Bearer ' in hd_token:
+        hd_token = hd_token.replace('Bearer ', '')
     else:
         return False
 
