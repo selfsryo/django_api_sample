@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth import get_user_model
 
 from app.models import Office, Combi
@@ -5,7 +7,7 @@ from app.models import Office, Combi
 
 def factory_user(**kwargs):
     d = {
-        'username': 'user',
+        'username': ''.join(random.choice('abcdef') for _ in range(10)),
         'email': 'test@example.com',
         'password': 'secure123'
     }

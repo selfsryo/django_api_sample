@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
@@ -26,6 +25,7 @@ class TestCreateAPICombi(TestCase):
         self.header = {'HTTP_AUTHORIZATION': self.token.token}
 
     def test_create_combi_success(self):
+        """コンビ作成成功"""
         res = self.client.post(COMBI_CREATE_URL, json.dumps({
             'name': 'マヂカルラブリー',
             'office': '吉本興業',
@@ -37,7 +37,8 @@ class TestCreateAPICombi(TestCase):
         self.assertEqual(msg, 'マヂカルラブリーを作成しました')
         self.assertEqual(Combi.objects.count(), 1)
 
-    def test_create_combi_fail(self):
+    def test_create_combi_lack_field(self):
+        """フィールド未入力でコンビ作成"""
         res = self.client.post(COMBI_CREATE_URL, json.dumps({
             'name': 'ミルクボーイ',
         }), content_type='application/json', **self.header)
@@ -58,6 +59,7 @@ class TestCreateAPICombi(TestCase):
         self.assertEqual(Combi.objects.count(), 0)
 
     def test_invalid_method(self):
+        """POSTメソッド以外でコンビ作成"""
         res = self.client.get(COMBI_CREATE_URL)
 
         self.assertEqual(res.status_code, 200)
@@ -71,11 +73,12 @@ class TestListAPICombi(TestCase):
         self.client.force_login(self.user)
 
         office = factory_office(name='吉本興業')
-        combi1 = factory_combi(name='霜降り明星', office=office)
-        combi2 = factory_combi(name='とろサーモン', office=office)
-        combi3 = factory_combi(name='銀シャリ', office=office)
+        factory_combi(name='霜降り明星', office=office)
+        factory_combi(name='とろサーモン', office=office)
+        factory_combi(name='銀シャリ', office=office)
 
     def test_get_combi_list(self):
+        """コンビ一覧取得成功"""
         res = self.client.get(COMBI_LIST_URL)
 
         self.assertEqual(res.status_code, 200)
@@ -96,6 +99,7 @@ class TestDetailAPICombi(TestCase):
         self.combi2 = factory_combi(name='笑い飯', office=office)
 
     def test_get_combi_detail(self):
+        """コンビ詳細取得成功"""
         url1 = reverse('app:detail', args=[self.combi1.pk])
         res = self.client.get(url1)
         self.assertEqual(res.status_code, 200)
@@ -110,6 +114,7 @@ class TestDetailAPICombi(TestCase):
         self.assertEqual(combi_dict['name'], '笑い飯')
 
     def test_not_exist_combi(self):
+        """存在しないコンビの詳細取得"""
         url = reverse('app:detail', args=[3])
         res = self.client.get(url)
 
@@ -131,6 +136,7 @@ class TestDeleteAPICombi(TestCase):
         self.combi = factory_combi(name='パンクブーブー', office=office)
 
     def test_delete_combi_success(self):
+        """コンビ削除成功"""
         url = reverse('app:delete', args=[self.combi.pk])
         res = self.client.delete(url, **self.header)
 
@@ -138,6 +144,7 @@ class TestDeleteAPICombi(TestCase):
         self.assertEqual(msg, 'パンクブーブーを削除しました')
 
     def test_not_exist_combi(self):
+        """存在しないコンビ削除"""
         url = reverse('app:delete', args=[2])
         res = self.client.delete(url, **self.header)
 
@@ -147,6 +154,7 @@ class TestDeleteAPICombi(TestCase):
         self.assertEqual(msg, '存在しないコンビです')
 
     def test_invalid_method(self):
+        """DELETEメソッド以外でコンビ削除"""
         url = reverse('app:delete', args=[self.combi.pk])
         res = self.client.get(url, **self.header)
 

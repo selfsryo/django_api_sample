@@ -2,7 +2,6 @@ import json
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET
 
 from app.models import Office, Combi
 from app.forms import (
@@ -27,7 +26,7 @@ def combi_create(request):
         return JsonResponse({'message': 'トークンを取得してください'}, status=400)
 
     if auth.check_valid_token(request) is None:
-        return JsonResponse({'message': 'リクエストヘッダにトークンが含まれません'}, status=400)
+        return JsonResponse({'message': 'リクエストヘッダにトークンが含まれていません'}, status=400)
     elif not auth.check_valid_token(request):
         return JsonResponse({'message': 'トークンが異なります'}, status=400)
 
@@ -35,7 +34,9 @@ def combi_create(request):
     form = CombiCreateAPIForm(params)
 
     if not form.is_valid():
-        return JsonResponse({'message': get_error_dict(form.errors)}, status=400)
+        return JsonResponse({
+            'message': get_error_dict(form.errors)
+        }, status=400)
 
     if not form.clean_office():
         return JsonResponse({'message': 'officeを含めてください'}, status=400)
@@ -69,11 +70,14 @@ def combi_detail(request, pk):
 
 @csrf_exempt
 def combi_delete(request, pk):
-    """
-    DELETEに対応
+    """DELETEに対応
     """
     if request.method != 'DELETE':
         return JsonResponse({'message': 'DELETEメソッドのみ受け付けます'}, status=405)
+
+    if not auth.has_token(request):
+        return JsonResponse({'message': 'トークンを取得してください'}, status=400)
+
     if auth.check_valid_token(request) is None:
         return JsonResponse({'message': 'リクエストヘッダにトークンが含まれていません'}, status=400)
     elif not auth.check_valid_token(request):
