@@ -27,7 +27,7 @@ def check_valid_token(request):
     hd_token = request.META.get('HTTP_AUTHORIZATION')
 
     if hd_token is None:
-        return hd_token
+        return
 
     if 'Token ' in hd_token:
         hd_token = hd_token.replace('Token ', '')
